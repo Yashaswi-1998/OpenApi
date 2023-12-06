@@ -486,7 +486,7 @@ paths:
   /v1/customMetadataFields/{id}:
     patch:
       tags:
-        - CustomMetadataFields
+        - [DAMSECTION, CustomMetadataFields]
       operationId: UpdateCMF
       summary: Update custom metadata field
       description: |
