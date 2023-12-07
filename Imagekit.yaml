@@ -310,8 +310,8 @@ paths:
       tags:
         - Digital Asset Management (DAM)
         - Managing assets
-      operationId: Update file details
-      summary: update-file-details
+      operationId: update-file-details
+      summary: Update file details
       description: |
         This API updates the details or attributes of the current version of the file. You can update `tags`, `customCoordinates`, `customMetadata`, remove existing `AITags` and apply extensions using this API.
       parameters:
@@ -2533,7 +2533,7 @@ paths:
       tags:
         - Caching
       operationId: purge-status
-      summary: get purge status
+      summary: Get purge status
       description: |
         This API returns the status of a purge cache request.
       parameters:
