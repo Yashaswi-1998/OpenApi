@@ -822,8 +822,9 @@ paths:
   /v1/files/{fileId}:
     delete:
       tags:
+        - Digital Asset Management (DAM)
         - Managing assets
-      operationId: DeleteFile
+      operationId: delete-file
       summary: Delete file
       description: |
         This API deletes the file and all its file versions permanently.
@@ -888,8 +889,8 @@ paths:
       tags:
         - Digital Asset Management (DAM)
         - Managing assets
-      operationId: delete-multiple-files
-      summary: Delete multiple files
+      operationId: delete-multiple
+      summary: Delete multiple
       description: |
         This API deletes multiple files and all their file versions permanently.
 
@@ -1001,8 +1002,9 @@ paths:
   /v1/files/copy:
     post:
       tags:
+        - Digital Asset Management (DAM)
         - Managing assets
-      operationId: CopyFile
+      operationId: copy-file
       summary: Copy file
       description: |
         This will copy a file from one folder to another. 
@@ -1084,8 +1086,9 @@ paths:
   /v1/files/move:
     post:
       tags:
+        - Digital Asset Management (DAM)
         - Managing assets
-      operationId: MoveFile
+      operationId: move-file
       summary: Move file
       description: |
         This will move a file and all its versions from one folder to another. 
@@ -1162,9 +1165,10 @@ paths:
   /v1/files/rename:
     put:
       tags:
+        - Digital Asset Management (DAM)
         - Managing assets
-      operationId: RenameFile
-      summary: Rename file
+      operationId: Rename File
+      summary: rename-file
       description: |
         You can rename an already existing file in the media library using rename file API. This operation would rename all file versions of the file. 
 
@@ -1293,8 +1297,9 @@ paths:
   /v1/files/{fileId}/versions:
     get:
       tags:
+        - Digital Asset Management (DAM)
         - Managing assets
-      operationId: ListFileVersions
+      operationId: list-file-versions
       summary: List file versions
       description: |
         This API returns details of all versions of a file.
@@ -1423,8 +1428,9 @@ paths:
   /v1/files/{fileId}/versions/{versionId}:
     get:
       tags:
+        - Digital Asset Management (DAM)
         - Managing assets
-      operationId: GetFileVersionDetails
+      operationId: get-file-version-details
       summary: Get file version details
       description: This API returns an object with details or attributes of a file version.
       parameters:
@@ -1523,8 +1529,9 @@ paths:
                     example: For support kindly contact us at support@imagekit.io .
     delete:
       tags:
+        - Digital Asset Management (DAM)
         - Managing assets
-      operationId: DeleteFileVersion
+      operationId: delete-file-version
       summary: Delete file version
       description: |
         This API deletes a non-current file version permanently. The API returns an empty response.
@@ -1607,8 +1614,9 @@ paths:
   /v1/files/{fileId}/versions/{versionId}/restore:
     put:
       tags:
+        - Digital Asset Management (DAM)
         - Managing assets
-      operationId: RestoreFileVersion
+      operationId: restore-file-version
       summary: Restore file version
       description: |
         This API restores a file version as the current file version.
@@ -1711,9 +1719,10 @@ paths:
   /v1/files/addTags:
     post:
       tags:
+        - Digital Asset Management (DAM)
         - Managing assets
-      operationId: AddTagsBulk
-      summary: Add tags in bulk
+      operationId: add-tags-bulk
+      summary: Add tags (bulk)
       description: |
         This API adds tags to multiple files in bulk.
       requestBody:
@@ -1834,9 +1843,10 @@ paths:
   /v1/files/removeTags:
     post:
       tags:
+        - Digital Asset Management (DAM)
         - Managing assets
-      operationId: RemoveTagsBulk
-      summary: Remove tags in bulk
+      operationId: remove-tags-bulk
+      summary: Remove tags (bulk)
       description: |
         This API removes tags from multiple files in bulk.
       requestBody:
@@ -1957,9 +1967,10 @@ paths:
   /v1/files/removeAITags:
     post:
       tags:
+        - Digital Asset Management (DAM)
         - Managing assets
-      operationId: RemoveAITagsBulk
-      summary: Remove AITags in bulk
+      operationId: remove-ai-tags-bulk
+      summary: Remove AI tags (bulk)
       description: |
         This API removes AITags from multiple files in bulk.
       requestBody:
@@ -2074,8 +2085,9 @@ paths:
   /v1/folder:
     post:
       tags:
-        - ManageFolder
-      operationId: CreateFolder
+        - Digital Asset Management (DAM)
+        - Managing folders
+      operationId: create-folder
       summary: Create folder
       description: |
         This will create a new folder. You can specify the folder name and location of the parent folder where this new folder should be created.
@@ -2138,8 +2150,9 @@ paths:
                     example: For support kindly contact us at support@imagekit.io .
     delete:
       tags:
-        - ManageFolder
-      operationId: DeleteFolder
+        - Digital Asset Management (DAM)
+        - Managing folders
+      operationId: delete-folder
       summary: Delete folder
       description: |
         This will delete a folder and all its contents permanently. The API returns an empty response.
@@ -2209,8 +2222,9 @@ paths:
   /v1/bulkJobs/copyFolder:
     post:
       tags:
-        - ManageFolder
-      operationId: CopyFolder
+        - Digital Asset Management (DAM)
+        - Managing folders
+      operationId: copy-folder
       summary: Copy folder
       description: |
         This will copy one folder into another. The selected folder, its nested folders, files, and their versions (in `includeVersions` is set to true) are copied in this operation. Note: If any file at the destination has the same name as the source file, then the source file and its versions will be appended to the destination file version history.
@@ -2295,8 +2309,9 @@ paths:
   /v1/bulkJobs/moveFolder:
     post:
       tags:
-        - ManageFolder
-      operationId: MoveFolder
+        - Digital Asset Management (DAM)
+        - Managing folders
+      operationId: move-folder
       summary: Move folder
       description: |
         This will move one folder into another. The selected folder, its nested folders, files, and their versions are moved in this operation. Note: If any file at the destination has the same name as the source file, then the source file and its versions will be appended to the destination file version history.
@@ -2376,8 +2391,9 @@ paths:
   /v1/bulkJobs/{jobId}:
     get:
       tags:
-        - ManageFolder
-      operationId: BulkJobStatus
+        - Digital Asset Management (DAM) 
+        - Managing folders
+      operationId: bulk-job-status
       summary: Bulk job status
       description: |
         This API returns the status of a bulk job like copy and move folder operations.
@@ -2456,8 +2472,8 @@ paths:
   /v1/files/purge:
     post:
       tags:
-        - PurgeCache
-      operationId: PurgeCache
+        - Caching
+      operationId: purge-cache
       summary: Purge cache
       description: |
         This API will purge CDN cache and ImageKit.io's internal cache for a file.  Note: Purge cache is an asynchronous process and it may take some time to reflect the changes.
@@ -2515,9 +2531,9 @@ paths:
   /v1/files/purge/{requestId}:
     get:
       tags:
-        - PurgeCache
-      operationId: PurgeCacheStatus
-      summary: Purge cache status
+        - Caching
+      operationId: purge-status
+      summary: get purge status
       description: |
         This API returns the status of a purge cache request.
       parameters:
@@ -2571,9 +2587,9 @@ paths:
   /v1/files/{fileId}/metadata:
     get:
       tags:
-        - FileMetadata
-      operationId: GetUploadedFileMetadata
-      summary: Get image metadata for uploaded media files.
+        - File Metadata
+      operationId: get-uploaded-file-metadata
+      summary: Get uploaded file metadata
       description: |
         You can programmatically get image EXIF, pHash, and other metadata for uploaded files in the ImageKit.io media library using this API.
 
@@ -2678,9 +2694,9 @@ paths:
   /v1/files/metadata:
     get:
       tags:
-        - FileMetadata
-      operationId: GetMetadataFromURL
-      summary: Get image metadata from remote URL
+        - File Metadata
+      operationId: get-metadata-from-url
+      summary: Get metadata from remote URL
       description: |
         Get image EXIF, pHash, and other metadata from ImageKit.io powered remote URL using this API.
       parameters:
@@ -2785,8 +2801,8 @@ paths:
       - url: https://upload.imagekit.io
     post:
       tags:
-        - UploadFile
-      operationId: UploadFile
+        - Upload File
+      operationId: upload-file
       summary: Upload file
       description: |
         You can upload files to the ImageKit.io media library from your server-side using private API key authentication.
@@ -2926,9 +2942,9 @@ paths:
       - url: https://upload.imagekit.io
     post:
       tags:
-        - UploadFileV2
-      operationId: UploadFileV2
-      summary: Upload file
+        - Upload File
+      operationId: upload-file-v2
+      summary: Upload file V2
       description: |
         This API is in beta and subject to change.
 
