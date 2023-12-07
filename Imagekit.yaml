@@ -13,8 +13,8 @@ servers:
 paths:
   /v1/customMetadataFields:
     post:
-      summary: Create custom metadata field
-      operationId: CreateCMF
+      summary: Create new field
+      operationId: create-new-field
       description: |
         This API creates a new custom metadata field.
 
@@ -144,12 +144,14 @@ paths:
                     description: Human readable help instructions.
                     example: For support kindly contact us at support@imagekit.io .
       tags:
-        - CustomMetadataFields
+        - Digital Asset Management (DAM)
+        - Custom metadata fields
     get:
       tags:
-        - CustomMetadataFields
-      operationId: ListCMF
-      summary: List all custom metadata fields
+        - Digital Asset Management (DAM)
+        - Custom metadata fields
+      operationId: list-all-fields
+      summary: List all fields
       description: This API returns the array of created custom metadata field objects. By default the API returns only non deleted field objects, but you can include deleted fields in the API response.
       parameters:
         - description: |
@@ -211,8 +213,9 @@ paths:
   /v1/files/{fileId}/details:
     get:
       tags:
-        - ManagingAssets
-      operationId: GetFileDetails
+        - Digital Asset Management (DAM)
+        - Managing assets
+      operationId: get-file-details
       summary: Get file details
       description: This API returns an object with details or attributes about the current version of the file.
       parameters:
@@ -305,9 +308,10 @@ paths:
                     example: For support kindly contact us at support@imagekit.io .
     patch:
       tags:
-        - ManagingAssets
-      operationId: UpdateFileDetails
-      summary: Update file details
+        - Digital Asset Management (DAM)
+        - Managing assets
+      operationId: Update file details
+      summary: update-file-details
       description: |
         This API updates the details or attributes of the current version of the file. You can update `tags`, `customCoordinates`, `customMetadata`, remove existing `AITags` and apply extensions using this API.
       parameters:
@@ -486,9 +490,10 @@ paths:
   /v1/customMetadataFields/{id}:
     patch:
       tags:
-        - CustomMetadataFields
-      operationId: UpdateCMF
-      summary: Update custom metadata field
+        - Digital Asset Management (DAM)
+        - Custom metadata fields
+      operationId: update-existing-field
+      summary: Update existing field
       description: |
         This API updates the label or schema of an existing custom metadata field.
       parameters:
@@ -591,9 +596,10 @@ paths:
                   maxValue: 3000
     delete:
       tags:
-        - CustomMetadataFields
-      operationId: DeleteCMF
-      summary: Delete custom metadata field
+        - Digital Asset Management (DAM)
+        - Custom metadata fields
+      operationId: delete-a-field
+      summary: Delete a field
       description: |
         This API deletes a custom metadata field. Even after deleting a custom metadata field, you cannot create any new custom metadata field with the same name.
       parameters:
@@ -614,8 +620,8 @@ paths:
   /v1/files:
     get:
       tags:
-        - ListAndSearchAssets
-      operationId: ListAndSearchAssets
+        - Digital Asset Management (DAM)
+      operationId: list-and-search-assets
       summary: List and search assets
       description: |
         This API can list all the uploaded files and folders in your ImageKit.io media library. In addition, you can fine-tune your query by specifying various filters by generating a query string in a Lucene-like syntax and provide this generated string as the value of the `searchQuery`.
@@ -816,7 +822,7 @@ paths:
   /v1/files/{fileId}:
     delete:
       tags:
-        - ManagingAssets
+        - Managing assets
       operationId: DeleteFile
       summary: Delete file
       description: |
@@ -995,7 +1001,7 @@ paths:
   /v1/files/copy:
     post:
       tags:
-        - ManagingAssets
+        - Managing assets
       operationId: CopyFile
       summary: Copy file
       description: |
@@ -1078,7 +1084,7 @@ paths:
   /v1/files/move:
     post:
       tags:
-        - ManagingAssets
+        - Managing assets
       operationId: MoveFile
       summary: Move file
       description: |
@@ -1156,7 +1162,7 @@ paths:
   /v1/files/rename:
     put:
       tags:
-        - ManagingAssets
+        - Managing assets
       operationId: RenameFile
       summary: Rename file
       description: |
@@ -1287,7 +1293,7 @@ paths:
   /v1/files/{fileId}/versions:
     get:
       tags:
-        - ManagingAssets
+        - Managing assets
       operationId: ListFileVersions
       summary: List file versions
       description: |
@@ -1417,7 +1423,7 @@ paths:
   /v1/files/{fileId}/versions/{versionId}:
     get:
       tags:
-        - ManagingAssets
+        - Managing assets
       operationId: GetFileVersionDetails
       summary: Get file version details
       description: This API returns an object with details or attributes of a file version.
@@ -1517,7 +1523,7 @@ paths:
                     example: For support kindly contact us at support@imagekit.io .
     delete:
       tags:
-        - ManagingAssets
+        - Managing assets
       operationId: DeleteFileVersion
       summary: Delete file version
       description: |
@@ -1601,7 +1607,7 @@ paths:
   /v1/files/{fileId}/versions/{versionId}/restore:
     put:
       tags:
-        - ManagingAssets
+        - Managing assets
       operationId: RestoreFileVersion
       summary: Restore file version
       description: |
@@ -1705,7 +1711,7 @@ paths:
   /v1/files/addTags:
     post:
       tags:
-        - ManagingAssets
+        - Managing assets
       operationId: AddTagsBulk
       summary: Add tags in bulk
       description: |
@@ -1828,7 +1834,7 @@ paths:
   /v1/files/removeTags:
     post:
       tags:
-        - ManagingAssets
+        - Managing assets
       operationId: RemoveTagsBulk
       summary: Remove tags in bulk
       description: |
@@ -1951,7 +1957,7 @@ paths:
   /v1/files/removeAITags:
     post:
       tags:
-        - ManagingAssets
+        - Managing assets
       operationId: RemoveAITagsBulk
       summary: Remove AITags in bulk
       description: |
