@@ -1167,8 +1167,8 @@ paths:
       tags:
         - Digital Asset Management (DAM)
         - Managing assets
-      operationId: Rename File
-      summary: rename-file
+      operationId: rename-file
+      summary: Rename file
       description: |
         You can rename an already existing file in the media library using rename file API. This operation would rename all file versions of the file. 
 
