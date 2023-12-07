@@ -486,7 +486,6 @@ paths:
   /v1/customMetadataFields/{id}:
     patch:
       tags:
-        - DAMSECTION
         - CustomMetadataFields
       operationId: UpdateCMF
       summary: Update custom metadata field
@@ -881,8 +880,9 @@ paths:
   /v1/files/batch/deleteByFileIds:
     post:
       tags:
-        - ManagingAssets
-      operationId: DeleteMultipleFiles
+        - Digital Asset Management (DAM)
+        - Managing assets
+      operationId: delete-multiple-files
       summary: Delete multiple files
       description: |
         This API deletes multiple files and all their file versions permanently.
