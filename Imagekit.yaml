@@ -2389,7 +2389,7 @@ paths:
   /v1/bulkJobs/{jobId}:
     get:
       tags:
-        - Digital Asset Management (DAM) 
+        - Digital Asset Management (DAM)
         - Managing folders
       operationId: bulk-job-status
       summary: Bulk job status
