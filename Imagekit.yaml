@@ -9,7 +9,7 @@ info:
     name: ImageKit Team
     url: https://imagekit.io
 servers:
-  - url: https://stage-api.imagekit.io
+  - url: https://stage.imagekit.io/api
 paths:
   /v1/customMetadataFields:
     post:
