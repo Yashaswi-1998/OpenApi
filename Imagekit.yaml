@@ -3,13 +3,13 @@ info:
   title: ImageKit API
   version: 1.0.0
   description: |-
-    ImageKit REST API. Please see https://imagekit.io/docs/api-reference/overview for more details.
+    ImageKit REST API. Please see https://imagekit.io/docs/api-reference/overview for more detail.
   contact:
     email: developers@imagekit.io
     name: ImageKit Team
     url: https://imagekit.io
 servers:
-  - url: https://stage.imagekit.io/api
+  - url: https://api.imagekit.io
 paths:
   /v1/customMetadataFields:
     post:
