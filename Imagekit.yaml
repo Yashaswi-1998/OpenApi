@@ -2410,7 +2410,9 @@ paths:
       operationId: get-uploaded-file-metadata
       summary: Get uploaded file metadata
       description: |
-        You can programmatically get image EXIF, pHash, and other metadata for uploaded files in the ImageKit.io media library using this API. You can also get the metadata in upload API response by passing `metadata` in `responseFields` parameter.
+        You can programmatically get image EXIF, pHash, and other metadata for uploaded files in the ImageKit.io media library using this API.
+
+        You can also get the metadata in upload API response by passing `metadata` in `responseFields` parameter.
       parameters:
         - description: |
             The unique `fileId` of the uploaded file. `fileId` is returned in the list and search assets API and upload API.
