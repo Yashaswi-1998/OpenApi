@@ -12,6 +12,242 @@ info:
 servers:
   - url: https://api.imagekit.io
 paths:
+  /api/v1/files/upload:
+    servers:
+      - url: https://upload.imagekit.io
+    post:
+      tags:
+        - Upload File
+      operationId: upload-file
+      summary: Upload file V1
+      security: []
+      description: |
+        ImageKit.io allows you to upload files directly from both the server-side and the client-side. For server-side uploads, [private API key authentication](/docs/api-reference/upload-file/upload-file#authorization-for-server-side-file-upload) is used. For client-side uploads, it is necessary to [generate a one-time token, signature, and expiration](/docs/api-reference/upload-file/upload-file#authorization-for-client-side-file-upload). The [V2 API](/docs/api-reference/upload-file/upload-file-v2) enhances security by verifying the entire payload using JWT.
+
+        **File size limit** \
+        On the free plan, the maximum upload file sizes are 20MB for images, audio, and raw files, and 100MB for videos. On the paid plan, these limits increase to 40MB for images, audio, and raw files, and 2GB for videos. These limits can be further increased with higher-tier plans.
+
+        **Version limit** \
+        A file can have a maximum of 100 versions.
+
+        **Demo applications**
+
+        - A full-fledged [upload widget using Uppy](https://github.com/imagekit-samples/uppy-uploader), supporting file selections from local storage, URL, Dropbox, Google Drive, Instagram, and more.
+        - [Quick start guides](/docs/quick-start-guides) for various frameworks and technologies.
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          description: >
+            Authorization is different for server-side vs client-side file upload.
+
+            ### Authorization for server-side file upload
+
+            Basic HTTP authentication. Provide base64 encoded value of the string `your_private_api_key:`.
+
+        
+            Notice the colon (:) after the private key. It is required otherwise, authentication will fail. The format is `username:password`. `username` is your private key and `password` is an empty string.
+
+        
+            If you encode `your_private_api_key:` using base64, you will get `eW91cl9wcml2YXRlX2FwaV9rZXk6`.
+
+            
+            For example - `Authorization: Basic eW91cl9wcml2YXRlX2FwaV9rZXk6`
+
+            ### Authorization for client-side file upload
+
+            For client-side file upload, do not set `Authorization` header. 
+            
+            
+            Instead pass `signature`, one-time `token` and `expire` as shown below.
+
+
+            Learn [how to implement client-side file upload](/docs/api-reference/upload-file/upload-file#how-to-implement-client-side-file-upload).
+      requestBody:
+       content:
+          multipart/form-data:
+            schema:
+              oneOf:
+                - $ref: '#/components/request/ServerSideUploadV1'
+                - $ref: '#/components/request/ClientSideUploadV1'
+      responses:
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "200":
+          description: File uploaded successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/Upload"
+              examples:
+                Simple image file:
+                  value:
+                    $ref: "#/components/examples/UploadResponseImage"
+                Simple video file:
+                  value:
+                    $ref: "#/components/examples/UploadResonseVideo"
+                Image with EmbeddedMetadata:
+                  value:
+                    $ref: "#/components/examples/UploadResponseWithEmbeddedMetadata"
+        "202":
+          description: File accepted for upload. Pre transformation for video is being processed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: The pre-transformation has been queued successfully.
+        "400":
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    examples:
+                    - Your request is missing file parameter.
+                    - Your request contains both signature and basic auth parameter. Use only one method, you might be exposing your private API key.
+                    - Your request contains invalid expire parameter. Expire parameter should be a Unix time in less than 1 hour into the future.
+                    - A file with the same name already exists at the exact location. We could not overwrite it because both overwriteFile and useUniqueFileName are set to false.
+                    - Your request contains invalid file parameter. The file size exceeds limits.
+                    - Upload Limit Exceeded.
+                    - Extensions quota exceeded.
+                    - The file could not be uploaded because the transformation field is invalid.
+                    - The file could not be uploaded because transformations are supported only for image and video files.
+                    - The file could not be uploaded because the detected file type & post-transformation are incompatible.
+                    - You have sent too many requests to update the file recently. Please try again later.
+                    - Your request contains invalid syntax for the checks parameter.
+                    - Your request failed 'checks' validation.
+                  help:
+                    type: string
+                    example: For support kindly contact us at support@imagekit.io.
+  /api/v2/files/upload:
+    servers:
+      - url: https://upload.imagekit.io
+    post:
+      tags:
+        - Upload File
+      operationId: upload-file-v2
+      summary: Upload file V2
+      security: []
+      description: |
+        The V2 API enhances security by verifying the entire payload using JWT. This API is in beta.
+
+        You can upload files directly from both the server-side and the client-side. For server-side uploads, [private API key authentication](/docs/api-reference/upload-file/upload-file-v2#authorization-for-server-side-file-upload) is used. For client-side uploads, it is necessary to [generating a one-time token](/docs/api-reference/upload-file/upload-file-v2#authorization-for-client-side-file-upload).
+
+        **File size limit** \
+        On the free plan, the maximum upload file sizes are 20MB for images, audio, and raw files, and 100MB for videos. On the paid plan, these limits increase to 40MB for images, audio, and raw files, and 2GB for videos. These limits can be further increased with higher-tier plans.
+
+        **Version limit** \
+        A file can have a maximum of 100 versions.
+
+        **Demo applications**
+        
+        - A full-fledged [upload widget using Uppy](https://github.com/imagekit-samples/uppy-uploader), supporting file selections from local storage, URL, Dropbox, Google Drive, Instagram, and more.
+        - [Quick start guides](/docs/quick-start-guides) for various frameworks and technologies.
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          description: >
+            Authorization is different for server-side vs client-side file upload.
+
+
+            ### Authorization for server-side file upload
+            
+            Basic HTTP authentication. Provide base64 encoded value of the string `your_private_api_key:`.
+        
+        
+            Notice the colon (:) after the private key. It is required otherwise, authentication will fail. The format is `username:password`. `username` is your private key and `password` is an empty string.
+
+        
+            If you encode `your_private_api_key:` using base64, you will get `eW91cl9wcml2YXRlX2FwaV9rZXk6`.
+
+            
+            For example - `Authorization: Basic eW91cl9wcml2YXRlX2FwaV9rZXk6`
+            
+            
+            ### Authorization for client-side file upload
+            
+            For client-side file upload, do not set `Authorization` header. Instead your client-side application must pass a JSON Web Token (JWT) as an authentication parameter. The upload API expects a `token` as a parameter. 
+            
+            
+            Learn [how to implement secure client-side file upload](/docs/api-reference/upload-file/upload-file-v2#how-to-implement-secure-client-side-file-upload).
+      requestBody:
+       content:
+          multipart/form-data:
+            schema:
+              oneOf:
+                - $ref: '#/components/request/ServerSideUploadV2'
+                - $ref: '#/components/request/ClientSideUploadV2'
+      responses:
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "200":
+          description: File uploaded successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/Upload"
+              examples:
+                Simple image file:
+                  value:
+                    $ref: "#/components/examples/UploadResponseImage"
+                Simple video file:
+                  value:
+                    $ref: "#/components/examples/UploadResonseVideo"
+                Image with EmbeddedMetadata:
+                  value:
+                    $ref: "#/components/examples/UploadResponseWithEmbeddedMetadata"
+        "202":
+          description: File accepted for upload. Pre transformation for video is being processed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: The pre-transformation has been queued successfully.
+        "400":
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    examples:
+                    - Your request is missing file parameter.
+                    - Your request contains both token and basic auth parameter. Use only one method, you might be exposing your private API key.
+                    - Your request contains invalid payload. It does not match with the payload used to generate token.
+                    - Your request is missing token parameter.
+                    - Your request contains expired token.
+                    - Your request has invalid token.
+                    - A file with the same name already exists at the exact location. We could not overwrite it because both overwriteFile and useUniqueFileName are set to false.
+                    - Your request contains invalid file parameter. The file size exceeds limits.
+                    - Upload Limit Exceeded.
+                    - Extensions quota exceeded.
+                    - The file could not be uploaded because the transformation field is invalid.
+                    - The file could not be uploaded because transformations are supported only for image and video files.
+                    - The file could not be uploaded because the detected file type & post-transformation are incompatible.
+                    - You have sent too many requests to update the file recently. Please try again later.
+                    - Your request contains invalid syntax for the checks parameter.
+                    - Your request failed 'checks' validation.
+                  help:
+                    type: string
+                    example: For support kindly contact us at support@imagekit.io.
   /v1/customMetadataFields:
     post:
       summary: Create new field
@@ -138,10 +374,9 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: A custom metadata field with this name already exists
+                    example: A custom metadata field with this name already exists.
                   help:
                     type: string
-                    description: Human readable help instructions.
                     example: For support kindly contact us at support@imagekit.io.
       tags:
         - Digital Asset Management (DAM)
@@ -191,7 +426,6 @@ paths:
                     type: Number
                     minValue: 1000
                     maxValue: 3000
-        
   /v1/files/{fileId}/details:
     get:
       tags:
@@ -241,6 +475,7 @@ paths:
                   id: 598821f949c0a938d57563bd
                   name: Version 1
                 isPrivateFile: false
+                isPublished: true
                 customCoordinates: null
                 url: https://ik.imagekit.io/your_imagekit_id/images/products/file.jpg
                 thumbnail: https://ik.imagekit.io/your_imagekit_id/tr:n-ik_ml_thumbnail/images/products/file.jpg
@@ -255,7 +490,6 @@ paths:
                   color: red
                 createdAt: "2019-08-24T06:14:41.313Z"
                 updatedAt: "2019-08-24T06:14:41.313Z"
-        
         "404":
           description: File not found.
           content:
@@ -269,6 +503,19 @@ paths:
                   help:
                     type: string
                     example: For support kindly contact us at support@imagekit.io.
+        "400":
+          description: Bad Request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Your request contains invalid fileId parameter.
+                  help:
+                    type: string
+                    example: For support kindly contact us at support@imagekit.io.
     patch:
       tags:
         - Digital Asset Management (DAM)
@@ -276,7 +523,7 @@ paths:
       operationId: update-file-details
       summary: Update file details
       description: |
-        This API updates the details or attributes of the current version of the file. You can update `tags`, `customCoordinates`, `customMetadata`, remove existing `AITags` and apply extensions using this API.
+        This API updates the details or attributes of the current version of the file. You can update `tags`, `customCoordinates`, `customMetadata`, publication status, remove existing `AITags` and apply extensions using this API.
       parameters:
         - description: |
             The unique `fileId` of the uploaded file. `fileId` is returned in list and search assets API and upload API.
@@ -289,54 +536,74 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                removeAITags:
-                  oneOf:
-                    - type: array
+              oneOf: 
+                - title: Update file details
+                  type: object
+                  properties:
+                    removeAITags:
+                      oneOf:
+                        - type: array
+                          items:
+                            type: string
+                        - type: string
+                          enum: ["all"]
+                      description: |
+                        An array of AITags associated with the file that you want to remove, e.g. `["car", "vehicle", "motorsports"]`. 
+                        
+                        If you want to remove all AITags associated with the file, send a string - "all".
+
+                        Note: The remove operation for `AITags` executes before any of the `extensions` are processed.
+                    webhookUrl:
+                      type: string
+                      description: |
+                        The final status of extensions after they have completed execution will be delivered to this endpoint as a POST request. [Learn more](/docs/api-reference/digital-asset-management-dam/managing-assets/update-file-details#webhook-payload-structure) about the webhook payload structure.
+                    extensions:
+                      type: array
+                      items:
+                        anyOf:
+                          - $ref: '#/components/request/RemovedotBGExtension'
+                          - $ref: '#/components/request/AutoTaggingExtension'
+                      description: >
+                        Array of extensions to be applied to the asset. Each extension can be configured with specific parameters based on the extension type.
+                    tags:
+                      type: array
                       items:
                         type: string
-                    - type: string
-                      enum: ["all"]
-                  description: |
-                    An array of AITags associated with the file that you want to remove, e.g. `["car", "vehicle", "motorsports"]`. 
-                    
-                    If you want to remove all AITags associated with the file, send a string - "all".
-
-                    Note: The remove operation for `AITags` executes before any of the `extensions` are processed.
-                webhookUrl:
-                  type: string
-                  description: |
-                    The final status of pending extensions will be sent to this URL.
-                extensions:
-                  type: array
-                  items:
-                    anyOf:
-                      - $ref: '#/components/request/RemovedotBGExtension'
-                      - $ref: '#/components/request/AutoTaggingExtension'
-                  description: >
-                    Array of extensions to be applied to the asset. Each extension can be configured with specific parameters based on the extension type.
-                tags:
-                  type: array
-                  items:
-                    type: string
-                  description: >
-                    An array of tags associated with the file, such as `["tag1", "tag2"]`. Send `null` to unset all tags associated with the file.
-                  nullable: true
-                  example: ["tag1", "tag2"]
-                  x-nullable-description: >
-                    Send `null` to unset all tags associated with the file.
-                customCoordinates:
-                  type: string
-                  nullable: true
-                  description: |
-                    Define an important area in the image in the format `x,y,width,height` e.g. `10,10,100,100`. Send `null` to unset this value.
-                  x-nullable-description: >
-                    Send `null` to unset this value.
-                customMetadata:
+                      description: >
+                        An array of tags associated with the file, such as `["tag1", "tag2"]`. Send `null` to unset all tags associated with the file.
+                      nullable: true
+                      example: ["tag1", "tag2"]
+                      x-nullable-description: >
+                        Send `null` to unset all tags associated with the file.
+                    customCoordinates:
+                      type: string
+                      nullable: true
+                      description: |
+                        Define an important area in the image in the format `x,y,width,height` e.g. `10,10,100,100`. Send `null` to unset this value.
+                      x-nullable-description: >
+                        Send `null` to unset this value.
+                    customMetadata:
+                      type: object
+                      description: |
+                        A key-value data to be associated with the asset. To unset a key, send `null` value for that key. Before setting any custom metadata on an asset you have to create the field using custom metadata fields API.
+                - title: Change publication status
                   type: object
-                  description: |
-                    A key-value data to be associated with the asset. To unset a key, send `null` value for that key. Before setting any custom metadata on an asset you have to create the field using custom metadata fields API.
+                  properties:
+                    publish:
+                      type: object
+                      required: ["isPublished"]
+                      description: |
+                        Configure the publication status of a file and its versions.
+                      properties:
+                        isPublished:
+                          type: boolean
+                          description: |
+                            Set to `true` to publish the file. Set to `false` to unpublish the file.
+                        includeFileVersions:
+                          type: boolean
+                          description: |
+                            Set to `true` to publish/unpublish all versions of the file. Set to `false` to publish/unpublish only the current version of the file.
+                        
             example:
               removeAITags: ["car", "vehicle", "motorsports"]
               webhookUrl: https://webhook.site/0d6b6c7a-8e5a-4b3a-8b7c-0d6b6c7a8e5a
@@ -390,6 +657,7 @@ paths:
                 type: file
                 name: file1.jpg
                 filePath: /images/products/file.jpg
+                isPublished: true
                 tags:
                   - t-shirt
                   - round-neck
@@ -444,7 +712,9 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: Invalid custom metadata.
+                    examples:
+                    - Invalid custom metadata.
+                    - Your request contains invalid fileId parameter.
                   help:
                     type: string
                     example: For support kindly contact us at support@imagekit.io.
@@ -707,7 +977,7 @@ paths:
             2. `type`
             3. `name`
 
-            [Learn more](#advanced-search-queries) from examples.
+            [Learn more](/docs/api-reference/digital-asset-management-dam/list-and-search-assets#advanced-search-queries) from examples.
           schema:
             type: string
         - in: query
@@ -833,8 +1103,26 @@ paths:
                   name: summer
                   createdAt: "2023-04-21T03:03:00.869Z"
                   updatedAt: "2023-04-21T03:10:22.374Z"
-                  folderPath: "/sale"
-        
+                  folderPath: "/sale"     
+        "400":
+          description: Bad Request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    examples: 
+                      - The value of skip parameter should be greater than or equal to 0. Value sent is -1.
+                      - Minimum value of limit parameter is 1. Value sent is 0.
+                      - Maximum value of limit parameter is 1000. Value sent is 2000.
+                      - Your request contains invalid value for sort parameters.
+                      - "Your request contains invalid value for type parameter. Please provide one of the following: file, file-version, folder, all."
+                      - sd
+                  help:
+                    type: string
+                    example: For support kindly contact us at support@imagekit.io.
   /v1/files/{fileId}:
     delete:
       tags:
@@ -873,6 +1161,19 @@ paths:
                   message:
                     type: string
                     example: The requested file does not exist.
+                  help:
+                    type: string
+                    example: For support kindly contact us at support@imagekit.io.
+        "400":
+          description: Bad Request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Your request contains invalid fileId parameter.
                   help:
                     type: string
                     example: For support kindly contact us at support@imagekit.io.
@@ -1396,6 +1697,19 @@ paths:
                   help:
                     type: string
                     example: For support kindly contact us at support@imagekit.io.
+        "400":
+          description: Bad Request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Your request contains invalid fileId parameter.
+                  help:
+                    type: string
+                    example: For support kindly contact us at support@imagekit.io.
   /v1/files/{fileId}/versions/{versionId}:
     get:
       tags:
@@ -1478,6 +1792,21 @@ paths:
                   help:
                     type: string
                     example: For support kindly contact us at support@imagekit.io.
+        "400":
+          description: Bad Request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    examples:
+                      - Your request contains invalid fileId parameter.
+                      - Your request contains invalid versionId parameter.
+                  help:
+                    type: string
+                    example: For support kindly contact us at support@imagekit.io.
     delete:
       tags:
         - Digital Asset Management (DAM)
@@ -1525,7 +1854,10 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: You cannot delete current version of a file.
+                    examples: 
+                    - You cannot delete current version of a file.
+                    - Your request contains invalid fileId parameter.
+                    - Your request contains invalid versionId parameter.
                   help:
                     type: string
                     example: For support kindly contact us at support@imagekit.io.
@@ -1626,6 +1958,21 @@ paths:
                   help:
                     type: string
                     example: For support kindly contact us at support@imagekit.io.
+        "400":
+          description: Bad Request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    examples:
+                      - Your request contains invalid fileId parameter.
+                      - Your request contains invalid versionId parameter.
+                  help:
+                    type: string
+                    example: For support kindly contact us at support@imagekit.io.
   /v1/files/addTags:
     post:
       tags:
@@ -1634,7 +1981,7 @@ paths:
       operationId: add-tags-bulk
       summary: Add tags (bulk)
       description: |
-        This API adds tags to multiple files in bulk.
+        This API adds tags to multiple files in bulk. A maximum of 50 files can be specified at a time.
       requestBody:
         content:
           application/json:
@@ -1730,6 +2077,26 @@ paths:
                       type: string
                     description: |
                       An array of fileIds that were not found.
+        "400":
+          description: Bad Request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    examples: 
+                      - fileIds parameter is missing.
+                      - fileIds is empty.
+                      - A maximum of 50 files can be edited at a time.
+                      - fileIds should be an Array.
+                      - tags parameter is missing.
+                      - tags array cannot be empty.
+                      - Your request contains invalid value for tags parameter. Combined length of all tags should be less than or equal to 500.
+                  help:
+                    type: string
+                    example: For support kindly contact us at support@imagekit.io.
   /v1/files/removeTags:
     post:
       tags:
@@ -1738,7 +2105,7 @@ paths:
       operationId: remove-tags-bulk
       summary: Remove tags (bulk)
       description: |
-        This API removes tags from multiple files in bulk.
+        This API removes tags from multiple files in bulk. A maximum of 50 files can be specified at a time.
       requestBody:
         content:
           application/json:
@@ -1814,8 +2181,7 @@ paths:
                           description: |
                             Error message for the file that was not updated.
                     description: |
-                      An array of fileIds that were not updated and the error.
-        
+                      An array of fileIds that were not updated and the error.        
         "404":
           description: File not found.
           content:
@@ -1835,6 +2201,26 @@ paths:
                       type: string
                     description: |
                       An array of fileIds that were not found.
+        "400":
+          description: Bad Request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    examples:
+                      - fileIds parameter is missing.
+                      - fileIds is empty.
+                      - A maximum of 50 files can be edited at a time.
+                      - fileIds should be an Array.
+                      - tags parameter is missing.
+                      - tags array cannot be empty.
+                      - Your request contains invalid value for tags parameter. Combined length of all tags should be less than or equal to 500.
+                  help:
+                    type: string
+                    example: For support kindly contact us at support@imagekit.io.
   /v1/files/removeAITags:
     post:
       tags:
@@ -1843,7 +2229,7 @@ paths:
       operationId: remove-ai-tags-bulk
       summary: Remove AI tags (bulk)
       description: |
-        This API removes AITags from multiple files in bulk.
+        This API removes AITags from multiple files in bulk. A maximum of 50 files can be specified at a time.
       requestBody:
         content:
           application/json:
@@ -1851,7 +2237,7 @@ paths:
               type: object
               required:
                 - fileIds
-                - tags
+                - AITags
               properties:
                 fileIds:
                   type: array
@@ -1859,7 +2245,7 @@ paths:
                     type: string
                   description: |
                     An array of fileIds from which you want to remove AITags.
-                tags:
+                AITags:
                   type: array
                   items:
                     type: string
@@ -1869,7 +2255,7 @@ paths:
               fileIds:
                 - 598821f949c0a938d57563bd
                 - 598821f949c0a938d57563be
-              tags:
+              AITags:
                 - t-shirt
                 - round-neck
                 - sale2019
@@ -1930,6 +2316,26 @@ paths:
                   message:
                     type: string
                     example: The requested file(s) does not exist.
+                  help:
+                    type: string
+                    example: For support kindly contact us at support@imagekit.io.
+        "400":
+          description: Bad Request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    examples:
+                      - fileIds parameter is missing.
+                      - fileIds is empty.
+                      - A maximum of 50 files can be edited at a time.
+                      - fileIds should be an Array.
+                      - AITags parameter is missing.
+                      - AITags array cannot be empty.
+                      - Your request contains invalid value for AITags. Please provide an array of strings. Example - ['t-shirt','summer-sale'].
                   help:
                     type: string
                     example: For support kindly contact us at support@imagekit.io.
@@ -1994,7 +2400,6 @@ paths:
                     example: "'.' & '..' can not be used as folder-name"
                   help:
                     type: string
-                    description: Human readable help instructions.
                     example: For support kindly contact us at support@imagekit.io.
     delete:
       tags:
@@ -2062,7 +2467,6 @@ paths:
                     example: Total nested assets (files, folders and file versions) are more than allowed limit of 100000 items.
                   help:
                     type: string
-                    description: Human readable help instructions.
                     example: For support kindly contact us at support@imagekit.io.
   /v1/bulkJobs/copyFolder:
     post:
@@ -2529,228 +2933,6 @@ paths:
                   help:
                     type: string
                     example: For support kindly contact us at support@imagekit.io.
-  /api/v1/files/upload:
-    servers:
-      - url: https://upload.imagekit.io
-    post:
-      tags:
-        - Upload File
-      operationId: upload-file
-      summary: Upload file V1
-      security: []
-      description: |
-        You can upload files to the ImageKit.io media library from your server-side using private API key authentication.
-
-        File size limit:
-        The maximum upload file size is limited to 25MB on the free plan. On paid plan, this limit is 300MB for video files.
-
-        Version limit:
-        A file can have a maximum of 100 versions.
-      parameters:
-        - in: header
-          name: Authorization
-          schema:
-            type: string
-          description: >
-            Authorization is different for server-side vs client-side file upload.
-
-            ### Authorization for server-side file upload
-
-            Basic HTTP authentication. Provide base64 encoded value of the string `your_private_api_key:`.
-
-        
-            Notice the colon (:) after the private key. It is required otherwise, authentication will fail. The format is `username:password`. `username` is your private key and `password` is an empty string.
-
-        
-            If you encode `your_private_api_key:` using base64, you will get `eW91cl9wcml2YXRlX2FwaV9rZXk6`.
-
-            
-            For example - `Authorization: Basic eW91cl9wcml2YXRlX2FwaV9rZXk6`
-
-            ### Authorization for client-side file upload
-
-            For client-side file upload, do not set `Authorization` header. 
-            
-            
-            Instead pass `signature`, one-time `token` and `expire` as shown below.
-
-
-            Learn [how to implement client-side file upload](#how-to-implement-client-side-file-upload).
-      requestBody:
-       content:
-          multipart/form-data:
-            schema:
-              oneOf:
-                - $ref: '#/components/request/ServerSideUploadV1'
-                - $ref: '#/components/request/ClientSideUploadV1'
-      responses:
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/Forbidden'
-        "200":
-          description: File uploaded successfully.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/responses/Upload"
-              examples:
-                Simple image file:
-                  value:
-                    $ref: "#/components/examples/UploadResponseImage"
-                Simple video file:
-                  value:
-                    $ref: "#/components/examples/UploadResonseVideo"
-                Image with EmbeddedMetadata:
-                  value:
-                    $ref: "#/components/examples/UploadResponseWithEmbeddedMetadata"
-        "202":
-          description: File accepted for upload. Pre transformation for video is being processed.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: The pre-transformation has been queued successfully.
-        "400":
-          description: Bad request.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    examples:
-                    - Your request is missing file parameter.
-                    - Your request contains both signature and basic auth parameter. Use only one method, you might be exposing your private API key.
-                    - Your request contains invalid expire parameter. Expire parameter should be a Unix time in less than 1 hour into the future.
-                    - A file with the same name already exists at the exact location. We could not overwrite it because both overwriteFile and useUniqueFileName are set to false.
-                    - Your request contains invalid file parameter. The file size exceeds limits.
-                    - Upload Limit Exceeded.
-                    - Extensions quota exceeded.
-                    - The file could not be uploaded because the transformation field is invalid.
-                    - The file could not be uploaded because transformations are supported only for image and video files.
-                    - The file could not be uploaded because the detected file type & post-transformation are incompatible.
-                    - You have sent too many requests to update the file recently. Please try again later.
-                  help:
-                    type: string
-                    example: For support kindly contact us at support@imagekit.io.
-  /api/v2/files/upload:
-    servers:
-      - url: https://upload.imagekit.io
-    post:
-      tags:
-        - Upload File
-      operationId: upload-file-v2
-      summary: Upload file V2
-      security: []
-      description: |
-        This API is in beta and subject to change.
-
-        You can upload files to the ImageKit.io media library from your server-side using private API key authentication.
-
-        File size limit:
-        The maximum upload file size is limited to 25MB on the free plan. On paid plan, this limit is 300MB for video files.
-
-        Version limit:
-        A file can have a maximum of 100 versions.
-      parameters:
-        - in: header
-          name: Authorization
-          schema:
-            type: string
-          description: >
-            Authorization is different for server-side vs client-side file upload.
-
-
-            ### Authorization for server-side file upload
-            
-            Basic HTTP authentication. Provide base64 encoded value of the string `your_private_api_key:`.
-        
-        
-            Notice the colon (:) after the private key. It is required otherwise, authentication will fail. The format is `username:password`. `username` is your private key and `password` is an empty string.
-
-        
-            If you encode `your_private_api_key:` using base64, you will get `eW91cl9wcml2YXRlX2FwaV9rZXk6`.
-
-            
-            For example - `Authorization: Basic eW91cl9wcml2YXRlX2FwaV9rZXk6`
-            
-            
-            ### Authorization for client-side file upload
-            
-            For client-side file upload, do not set `Authorization` header. Instead your client-side application must pass a JSON Web Token (JWT) as an authentication parameter. The upload API expects a `token` as a parameter. 
-            
-            
-            Learn [how to implement secure client-side file upload](#how-to-implement-secure-client-side-file-upload).
-      requestBody:
-       content:
-          multipart/form-data:
-            schema:
-              oneOf:
-                - $ref: '#/components/request/ServerSideUploadV2'
-                - $ref: '#/components/request/ClientSideUploadV2'
-      responses:
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/Forbidden'
-        "200":
-          description: File uploaded successfully.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/responses/Upload"
-              examples:
-                Simple image file:
-                  value:
-                    $ref: "#/components/examples/UploadResponseImage"
-                Simple video file:
-                  value:
-                    $ref: "#/components/examples/UploadResonseVideo"
-                Image with EmbeddedMetadata:
-                  value:
-                    $ref: "#/components/examples/UploadResponseWithEmbeddedMetadata"
-        "202":
-          description: File accepted for upload. Pre transformation for video is being processed.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: The pre-transformation has been queued successfully.
-        "400":
-          description: Bad request.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    examples:
-                    - Your request is missing file parameter.
-                    - Your request contains both token and basic auth parameter. Use only one method, you might be exposing your private API key.
-                    - Your request contains invalid payload. It does not match with the payload used to generate token.
-                    - Your request is missing token parameter.
-                    - Your request contains expired token.
-                    - Your request has invalid token.
-                    - A file with the same name already exists at the exact location. We could not overwrite it because both overwriteFile and useUniqueFileName are set to false.
-                    - Your request contains invalid file parameter. The file size exceeds limits.
-                    - Upload Limit Exceeded.
-                    - Extensions quota exceeded.
-                    - The file could not be uploaded because the transformation field is invalid.
-                    - The file could not be uploaded because transformations are supported only for image and video files.
-                    - The file could not be uploaded because the detected file type & post-transformation are incompatible.
-                    - You have sent too many requests to update the file recently. Please try again later.
-                  help:
-                    type: string
-                    example: For support kindly contact us at support@imagekit.io.
   /v1/accounts/usage:
     get:
       tags:
@@ -2766,14 +2948,14 @@ paths:
           schema:
             type: string
             format: date
-          required: false
+          required: true
         - in: query
           name: endDate
           description: Specify a `endDate` in `YYYY-MM-DD` format. It should be after the `startDate`. The difference between `startDate` and `endDate` should be less than 90 days.
           schema:
             type: string
             format: date
-          required: false
+          required: true
       responses:
         200:
           description: In the response, you will get different usage metrics.
@@ -2814,7 +2996,11 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: startDate and endDate should be within 90 days.
+                    examples:
+                    - startDate and endDate should be within 90 days.
+                    - startDate and endDate are required in query parameters.
+                    - startDate and endDate should be in format YYYY-MM-DD.
+                    - startDate should be before endDate.
                   help:
                     type: string
                     example: For support kindly contact us at support@imagekit.io.
@@ -2971,7 +3157,7 @@ components:
         webhookUrl:
           type: string
           description: >
-            The final status of pending extensions will be sent to this URL.
+            The final status of extensions after they have completed execution will be delivered to this endpoint as a POST request. [Learn more](/docs/api-reference/digital-asset-management-dam/managing-assets/update-file-details#webhook-payload-structure) about the webhook payload structure.
         overwriteFile:
           type: string
           default: true
@@ -3022,6 +3208,14 @@ components:
             
             Read more about [Adaptive bitrate streaming (ABS)](/docs/adaptive-bitrate-streaming).
           example: '{"pre": "width:300,height:300,quality:80", "post": [{"type": "thumbnail", "value": "width:100,height:100"}]}'
+        checks:
+          type: string
+          description: >
+            Server-side checks to run on the asset.
+            
+            Read more about [Upload API checks](/docs/api-reference/upload-file/upload-file#upload-api-checks).
+          example: >
+            "request.folder" : "marketing/"
     ServerSideUploadV1:
       type: object
       title: Server side file upload
@@ -3143,7 +3337,7 @@ components:
         webhookUrl:
           type: string
           description: >
-            The final status of pending extensions will be sent to this URL.
+            The final status of extensions after they have completed execution will be delivered to this endpoint as a POST request. [Learn more](/docs/api-reference/digital-asset-management-dam/managing-assets/update-file-details#webhook-payload-structure) about the webhook payload structure.
         overwriteFile:
           type: string
           default: true
@@ -3194,6 +3388,14 @@ components:
             
             Read more about [Adaptive bitrate streaming (ABS)](/docs/adaptive-bitrate-streaming).
           example: '{"pre": "width:300,height:300,quality:80", "post": [{"type": "thumbnail", "value": "width:100,height:100"}]}'
+        checks:
+          type: string
+          description: >
+            Server-side checks to run on the asset.
+            
+            Read more about [Upload API checks](/docs/api-reference/upload-file/upload-file#upload-api-checks).
+          example: >
+            "request.folder" : "marketing/"
     ClientSideUploadV2:
       type: object
       title: Client side file upload
@@ -3313,7 +3515,7 @@ components:
         webhookUrl:
           type: string
           description: >
-            The final status of pending extensions will be sent to this URL.
+            The final status of extensions after they have completed execution will be delivered to this endpoint as a POST request. [Learn more](/docs/api-reference/digital-asset-management-dam/managing-assets/update-file-details#webhook-payload-structure) about the webhook payload structure.
         overwriteFile:
           type: string
           default: true
@@ -3364,6 +3566,14 @@ components:
             
             Read more about [Adaptive bitrate streaming (ABS)](/docs/adaptive-bitrate-streaming).
           example: '{"pre": "width:300,height:300,quality:80", "post": [{"type": "thumbnail", "value": "width:100,height:100"}]}'
+        checks:
+          type: string
+          description: >
+            Server-side checks to run on the asset.
+            
+            Read more about [Upload API checks](/docs/api-reference/upload-file/upload-file-v2#upload-api-checks).
+          example: >
+            "request.folder" : "marketing/"
     ServerSideUploadV2:
       type: object
       title: Server side file upload
@@ -3469,7 +3679,7 @@ components:
         webhookUrl:
           type: string
           description: >
-            The final status of pending extensions will be sent to this URL.
+            The final status of extensions after they have completed execution will be delivered to this endpoint as a POST request. [Learn more](/docs/api-reference/digital-asset-management-dam/managing-assets/update-file-details#webhook-payload-structure) about the webhook payload structure.
         overwriteFile:
           type: string
           default: true
@@ -3520,6 +3730,14 @@ components:
             
             Read more about [Adaptive bitrate streaming (ABS)](/docs/adaptive-bitrate-streaming).
           example: '{"pre": "width:300,height:300,quality:80", "post": [{"type": "thumbnail", "value": "width:100,height:100"}]}'
+        checks:
+          type: string
+          description: >
+            Server-side checks to run on the asset.
+            
+            Read more about [Upload API checks](/docs/api-reference/upload-file/upload-file-v2#upload-api-checks).
+          example: >
+            "request.folder" : "marketing/"       
     RemovedotBGExtension:
       title: Remove background
       type: object
@@ -3630,6 +3848,10 @@ components:
           type: boolean
           description: |
             Specifies if the file is private or not.
+        isPublished:
+          type: boolean
+          description: |
+            Specifies if the file is published or not.
         customCoordinates:
           oneOf:
             - type: string
@@ -5372,7 +5594,7 @@ components:
         ImageKit API uses API keys to authenticate requests. You can view and manage your API keys in [the dashboard](https://imagekit.io/dashboard/developer/api-keys).
 
         
-        Private keys have the prefix `private_` and the public keys have the prefix `public_`. Alternatively, you can use [restricted API keys](/api-keys#restricted-api-keys) for granular permissions.
+        Private keys have the prefix `private_` and the public keys have the prefix `public_`. Alternatively, you can use [restricted API keys](/docs/api-keys#restricted-api-keys) for granular permissions.
 
         
         Your API keys carry many privileges, so be sure to keep them secure! Do not share your secret API keys in publicly accessible areas such as GitHub, client-side code, and so forth.
