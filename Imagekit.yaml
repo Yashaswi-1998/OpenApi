@@ -20,7 +20,8 @@ paths:
         - Upload File
       operationId: upload-file
       summary: Upload file V1
-      security: []
+      security:
+        - basicAuth: []
       description: |
         ImageKit.io allows you to upload files directly from both the server-side and the client-side. For server-side uploads, [private API key authentication](/docs/api-reference/upload-file/upload-file#authorization-for-server-side-file-upload) is used. For client-side uploads, it is necessary to [generate a one-time token, signature, and expiration](/docs/api-reference/upload-file/upload-file#authorization-for-client-side-file-upload). The [V2 API](/docs/api-reference/upload-file/upload-file-v2) enhances security by verifying the entire payload using JWT.
 
@@ -136,7 +137,8 @@ paths:
         - Upload File
       operationId: upload-file-v2
       summary: Upload file V2
-      security: []
+      security:
+        - basicAuth: []
       description: |
         The V2 API enhances security by verifying the entire payload using JWT. This API is in beta.
 
@@ -3023,7 +3025,10 @@ components:
         - expire
       properties:
         file:
-          type: string
+          oneOf:
+            - type: string
+            - type: string
+              format: binary
           description: >
             This field accepts three kinds of values:
             
