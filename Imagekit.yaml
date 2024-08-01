@@ -159,6 +159,7 @@ paths:
           name: Authorization
           schema:
             type: string
+          x-omit-in-ui: true
           description: >
             Authorization is different for server-side vs client-side file upload.
 
